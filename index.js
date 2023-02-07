@@ -127,7 +127,7 @@ async function agregarTarea( req, res ){
   // Obten la fecha separada para crear la fecha con el dia correcto
   let fecha;
   if( date ){
-    fecha = formatearFecha(date);
+    fecha = date;
   }
   else{
     fecha = new Date();
@@ -228,7 +228,7 @@ async function obtenerTareas( req, res ){
     else if( limit !== '0' ){
       console.log('Entra', limit)
       const limite = parseInt(limit);
-      const limiteArr = log.filter( ( tarea, indice ) => indice < limite )
+      const limiteArr = log.filter( ( tarea, indice ) => indice <= limite )
                            .map( tarea => {
                             const { description, duration, date } = tarea;
                             return {
