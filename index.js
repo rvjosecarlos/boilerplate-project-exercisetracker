@@ -125,7 +125,13 @@ async function agregarTarea( req, res ){
   let existeUsuario;
 
   // Obten la fecha separada para crear la fecha con el dia correcto
-  const fecha = formatearFecha(date);
+  let fecha;
+  if( date ){
+    fecha = formatearFecha(date);
+  }
+  else{
+    fecha = new Date();
+  };  
   console.log('FECHAS',date, fecha);
 
 
@@ -152,7 +158,7 @@ async function agregarTarea( req, res ){
     res.json( {
       _id,
       username,
-      date: nuevaTarea.date,
+      date: new Date( fecha ).toDateString(),
       duration: nuevaTarea.duration,
       description: nuevaTarea.description
     } );
@@ -185,7 +191,7 @@ async function obtenerTareas( req, res ){
     const usuario = await Usuarios.findById(  id  );
     const { _id, username, count, log } = usuario;
 
-    if( from ){
+    if( from && to && limit ){
       
 
       const desdeSF = formatearFecha( from );
@@ -216,6 +222,27 @@ async function obtenerTareas( req, res ){
         to: hasta.toDateString(),
         count: filtroTareas.length,
         log: filtroTareas
+      });
+      return;
+    }
+    else if( limit !== '0' ){
+      console.log('Entra', limit)
+      const limite = parseInt(limit);
+      const limiteArr = log.filter( ( tarea, indice ) => indice < limite )
+                           .map( tarea => {
+                            const { description, duration, date } = tarea;
+                            return {
+                              description,
+                              duration,
+                              date: date.toDateString()
+                            }
+                           });
+
+      res.json({
+        _id,
+        username,
+        count: limiteArr.length,
+        log: limiteArr
       });
       return;
     }     
